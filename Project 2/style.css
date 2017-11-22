@@ -1,0 +1,17 @@
+.container {
+	text-align: center;
+	background-color: antiquewhite;
+}
+.aboutUs {
+	text-align: center;
+}
+.login {
+	text-align: center;
+	float: right 50%;
+	width: 300px;
+    border: 25px solid black;
+    padding: 25px;
+    margin: 25px;
+    margin-left: 500px;
+}
+
