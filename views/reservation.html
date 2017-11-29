@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Barbershop Scheduler</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/css/bootstrap-datetimepicker.css">
+    <!-- <link rel="stylesheet" type="text/css" href="style.css" </head> -->
+
+    <body>
+        <nav class="navbar navbar-inverse">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">Classic Style</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="/login">Log In</a>
+                    </li>
+                    <li><a href="/logout">Log Out</a></li>
+                    <li>
+                        <a href="/index">Home</a>
+                    </li>
+                    <!-- <li>
+                        <a href="/services">Services</a>
+                    </li> -->
+                    <li class="active">
+                        <a href="/reservation">Reservations</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </nav>
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Book Appointment</h4>
+                        <script>
+                            var now = new Date();
+                            var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+                            var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+                            var date = ((now.getDate() < 10) ? "0" : "") + now.getDate();
+
+                            function fourdigits(number) {
+                                return (number < 1000) ? number + 1900 : number;
+                            }
+                            today = days[now.getDay()] + ", " +
+                                months[now.getMonth()] + " " +
+                                date + ", " +
+                                (fourdigits(now.getYear()));
+                            document.write(today);
+                        //  End -->
+                        </script>
+                    </div>
+                    <div class="panel-body">
+                        <form role="form" action="/reservation" , method="POST">
+                            <div class="form-group">
+                                    <label for="reserve-name">Appointment Date and Time</label>                                                                            
+                                <div class='input-group date' id='datetime'>
+                                    <input name="datetime" type='text' class="form-control" />
+                                    <span class="input-group-addon">
+                                        <span class="glyphicon glyphicon-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="reserve-name">Name</label>
+                                <input type="text" name="name" class="form-control" id="reserve-name">
+                            </div>
+                            <div class="form-group">
+                                <label for="reserve-phone">Phone Number</label>
+                                <input type="text" name="phone" class="form-control" id="reserve-phone">
+                            </div>
+                          <!--   <div class="form-group">
+                                <label for="reserve-email">Email</label>
+                                <input type="text" name="email" class="form-control" id="reserve-email">
+                            </div>
+                            <div class="form-group">
+                                <label for="reserve-service">Service</label>
+                                <input type="text" name="service" class="form-control" id="reserve-service">
+                            </div>
+                            <div class="form-group">
+                                <label for="reserve-unique-id">Membership ID</label>
+                                <input type="text" name="id" class="form-control" id="reserve-unique-id">
+                            </div> -->
+                            <button type="submit" class="btn btn-primary submit">Submit</button>
+                        </form>
+
+    </body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+    <script>
+        $(function () {
+            $('#datetime').datetimepicker();
+        });
+    </script>
+
+</html>

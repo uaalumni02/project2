@@ -14,4 +14,10 @@
     margin: 25px;
     margin-left: 500px;
 }
+.title {
+	text-align: center;
+	}
+.loginContainer{
+	background-color: antiquewhite;
+}
 
