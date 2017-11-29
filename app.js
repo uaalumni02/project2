@@ -15,7 +15,7 @@ var session = require('express-session');
 var DB_URL = process.env.MONGO_URL;
 var TOKEN = process.env.TOKEN;
 
-var PORT = 3000;
+var PORT = process.env.PORT ||3000;
 
 var TWILIO_ID = process.env.TWILIO_ACCOUNT_ID;
 var TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
