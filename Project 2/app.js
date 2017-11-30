@@ -1,4 +1,6 @@
 require('dotenv').config();
+var inquirer = require('inquirer');
+var mysql = require('mysql');
 var express = require('express');
 var twilio = require('twilio');
 var mongoose = require('mongoose');
@@ -10,6 +12,14 @@ var app = express();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+
+var connection = mysql.createConnection({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'mecotyya1!',
+    database: 'barbershop'
+});
 
 
 var DB_URL = process.env.MONGO_URL;
@@ -23,7 +33,10 @@ var TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
 var Twilio = twilio(TWILIO_ID, TWILIO_TOKEN);
 
 
-
+// MySQL connect
+connection.connect(function() {
+    console.log('Connection successful');
+});
 
 // Connect to mongoose
 mongoose.connect(DB_URL, { useMongoClient: true }).then(function() {
@@ -78,6 +91,51 @@ app.get('/reservation', sessionChecker, function (req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/reservation.html'));
 });
+app.get('/Inventoryinput', sessionChecker, function (req, res) {
+    // return res.send('It works');
+    return res.sendFile(path.join(__dirname + '/views/Inventoryinput.html'));
+});
+
+app.post('/Inventoryinput', sessionChecker, function(req, res) {
+    var productId = parseInt(req.body.product_id);
+    var quantityRestock = req.body.qty_restock || 0;
+    var quantityDeplete = req.body.qty_deplete || 0;
+    var sqlQuery;
+    var productQuantity;
+
+    var operation = quantityDeplete > quantityRestock ? 'REMOVE' : 'ADD';
+
+    return connection.query(`SELECT StockQuantity from Products WHERE ItemId = "${productId}"`, function(err, result) {
+        console.log(result);
+        var quantityAvailable = Number(result[0].StockQuantity);
+        var newQuantity;
+        console.log('===' + quantityAvailable);
+        if(operation == 'REMOVE') {
+            newQuantity =  quantityAvailable - Number(quantityDeplete);
+        } else {
+            newQuantity = quantityAvailable + Number(quantityRestock);
+        }
+        var sqlQueryOperation = `UPDATE Products SET StockQuantity = ${newQuantity} WHERE ItemId = "${productId}"`;
+        return connection.query(sqlQueryOperation, function(error, data) {
+            console.log(error, data)
+            if(!error) {
+                return res.status(201).redirect('/products'); //('Data Updated Successfully');
+            } else {
+                return res.status(400).json(error.message);
+            }
+        });
+    })
+    // ItemId int(11) AUTO_INCREMENT NOT NULL,
+   // ProductName varchar(100) NOT NULL,
+    // StockQuantity  int NOT NULL, 
+    // PRIMARY KEY (ItemId)
+ //   console.log(product_id, quantityRestock, quantityDeplete);
+   // if(quantityRestock > 0) {
+     //   sql
+   //  } 
+
+
+});
 
 app.post('/reservation', function (req, res) {
     // Post the form here ...
@@ -109,6 +167,16 @@ app.post('/reservation', function (req, res) {
         }
     });
 
+});
+
+app.get('/api/products', sessionChecker, function(req, res) {
+    return connection.query('SELECT * FROM Products', function(err, results) {
+        return res.json(results);
+    });
+});
+
+app.get('/products', sessionChecker, function(req, res) {
+    return res.sendFile(path.join(__dirname + '/views/allproducts.html'));
 });
 
 
