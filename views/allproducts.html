@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,25 +19,45 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li><a href="/login">Log In</a></li>
-                    <li><a href="/logout">Log Out</a></li>
-                    <li class="active"><a href="/index">Home</a></li>
-                   <!--  <li><a href="/services">Services</a></li> -->
+                    <li><a href="/index">Home</a></li>
+                 <!--    <li class="active"><a href="/services">Services</a></li> -->
                     <li><a href="/reservation">Reservations</a></li>
-                    <li><a href="/productlist">Products</a></li>
-                    <li><a href="/Inventoryinput">+/-Quantity</a></li
-                                    </ul>
+                    
+                </ul>
             </div>
         </nav>
-        <div class="container">
-            <h1>Barber Pro 5.0</h1>
-            <br>
-            <img src="https://static1.squarespace.com/static/55badcf5e4b09e80d2189c99/t/56415323e4b0a6ed01c8d0e6/1447121713238/barbershop.jpg?format=1500w" height="500px;">
+        <div class="Services">
+            <h1>Product List</h1>
         </div>
         <br>
-        <div class="aboutUs">
-            <h1>Welcome to Barber Pro 5.0</h1>
-            <p>Barber Pro 5.0 offers scheduling assistance via data storage which includes friendly consumer sms reminders. We also assist with managing daily inventory for our customers</p>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Quantity</th>
+                </tr>
+            </thead>
+            <tbody id="product-table-body">
+            </tbody>
+        </table>
         </div>
     </body>
+	<script>
+		$(document).ready(function() {
+			$.getJSON('/api/products', function(products) {
+				products.forEach(function(product) {
+					var productHtml = `
+					<tr>
+                    	<td>${product.ItemId}</td>
+                    	<td>${product.ProductName}</td>
+                    	<td>${product.StockQuantity}</td>
+                	</tr>
+					`;
 
+					$('#product-table-body').append(productHtml);
+				});
+			});
+		})
+	</script>
 </html>
