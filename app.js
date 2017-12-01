@@ -1,5 +1,5 @@
 require('dotenv').config();
-var inquirer = require('inquirer');
+// var inquirer = require('inquirer');
 var mysql = require('mysql');
 var express = require('express');
 var twilio = require('twilio');
