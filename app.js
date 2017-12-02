@@ -27,7 +27,13 @@ var connection = mysql.createConnection({
     database: 'heroku_517e0a0ae32c3ab'
 });
 
-
+connection.query('SELECT * from Products', (err, data) => {
+        if(!err) {
+            console.log(data)
+        } else {
+            console.log(err.message)
+        }
+});
 var DB_URL = process.env.MONGO_URL;
 var TOKEN = process.env.TOKEN;
 
@@ -190,6 +196,16 @@ app.get('/login', sessionChecker, function(req, res) {
 // app.get('/services', function (req, res) {
 //     return res.sendFile(path.join(__dirname + '/views/services.html'));
 // });
+
+
+app.get('/dblog', (req, res) => {
+    return connection.query('SELECT * from Products', (e, d) => {
+        if(!e)
+            console.log(d)
+        else
+            console.log(e.message);
+    });
+});
 
 app.get('/index', sessionChecker, function(req, res) {
     return res.sendFile(path.join(__dirname + '/views/index.html'));
