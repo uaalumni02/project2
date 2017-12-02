@@ -50,6 +50,10 @@ connection.connect(function() {
     console.log('Connection successful my sql =========================>');
 });
 
+connect.on('error', function() {
+    console.log('Connection Error');
+});
+
 // Connect to mongoose
 mongoose.connect(DB_URL, { useMongoClient: true }).then(function() {
     console.log("Connection successful")
@@ -201,7 +205,7 @@ app.get('/login', sessionChecker, function(req, res) {
 app.get('/dblog', (req, res) => {
     return connection.query('SELECT * from Products', (e, d) => {
         if(!e)
-            console.log(d)
+            console.log(d);
         else
             console.log(e.message);
     });
