@@ -116,7 +116,7 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
 
     return connection.query(`SELECT StockQuantity from Products WHERE ItemId = "${productId}"`, function(err, result) {
         console.log(result);
-        console.log(error)
+        console.log(err)
         if(results){
             var quantityAvailable = Number(result[0].StockQuantity);
             var newQuantity;
