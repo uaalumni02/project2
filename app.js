@@ -12,7 +12,6 @@ var app = express();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-mysql://b780db20a8b3da:04b718ae@us-cdbr-iron-east-05.cleardb.net/heroku_517e0a0ae32c3ab?reconnect=true
 // var connection = mysql.createConnection({
 //     host: 'localhost',
 //     port: 3306,
@@ -22,8 +21,30 @@ mysql://b780db20a8b3da:04b718ae@us-cdbr-iron-east-05.cleardb.net/heroku_517e0a0a
 // });
 
 var connection = mysql.createConnection({
-    jbdc:"mysql://b780db20a8b3da:04b718ae@us-cdbr-iron-east-05.cleardb.net/heroku_517e0a0ae32c3ab?reconnect=true"
+    host: 'us-cdbr-iron-east-05.cleardb.net',
+    user: 'b780db20a8b3da',
+    password: '04b718ae',
+    database: 'heroku_517e0a0ae32c3ab'
 });
+var execsql = require('execsql'),
+    dbConfig = {
+        
+    host: 'us-cdbr-iron-east-05.cleardb.net',
+    user: 'b780db20a8b3da',
+    password: '04b718ae',
+    database: 'heroku_517e0a0ae32c3ab'
+    },
+    sql = 'use db_cam;',
+    sqlFile = __dirname + '/views/barber.sql';
+
+    execsql.config(dbConfig)
+    .exec(sql)
+    .execFile(sqlFile, function(err, results){
+        console.log('===============seeeeded============>', results);
+    }).end();
+// var connection = mysql.createConnection({
+//     jbdc:"mysql://b780db20a8b3da:04b718ae@us-cdbr-iron-east-05.cleardb.net/heroku_517e0a0ae32c3ab?reconnect=true"
+// });
 
 
 
@@ -135,6 +156,8 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
                     return res.status(400).json(error.message);
                 }
             });
+        } else {
+             return res.status(400).json(err.message);
         }
     })
 
