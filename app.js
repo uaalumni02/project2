@@ -26,27 +26,6 @@ var connection = mysql.createConnection({
     password: '04b718ae',
     database: 'heroku_517e0a0ae32c3ab'
 });
-var execsql = require('execsql'),
-    dbConfig = {
-        
-    host: 'us-cdbr-iron-east-05.cleardb.net',
-    user: 'b780db20a8b3da',
-    password: '04b718ae',
-    database: 'heroku_517e0a0ae32c3ab'
-    },
-    sql = 'use db_cam;',
-    sqlFile = __dirname + '/views/barber.sql';
-
-    execsql.config(dbConfig)
-    .exec(sql)
-    .execFile(sqlFile, function(err, results){
-        console.log(err);
-        console.log('===============seeeeded============>', results);
-    }).end();
-// var connection = mysql.createConnection({
-//     jbdc:"mysql://b780db20a8b3da:04b718ae@us-cdbr-iron-east-05.cleardb.net/heroku_517e0a0ae32c3ab?reconnect=true"
-// });
-
 
 
 var DB_URL = process.env.MONGO_URL;
@@ -62,7 +41,7 @@ var Twilio = twilio(TWILIO_ID, TWILIO_TOKEN);
 
 // MySQL connect
 connection.connect(function() {
-    console.log('Connection successful');
+    console.log('Connection successful my sql =========================>');
 });
 
 // Connect to mongoose
@@ -139,27 +118,23 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
     return connection.query(`SELECT StockQuantity from Products WHERE ItemId = "${productId}"`, function(err, result) {
         console.log(result);
         console.log(err)
-        if(result){
-            var quantityAvailable = Number(result[0].StockQuantity);
-            var newQuantity;
-            console.log('===' + quantityAvailable);
-            if (operation == 'REMOVE') {
-                newQuantity = quantityAvailable - Number(quantityDeplete);
-            } else {
-                newQuantity = quantityAvailable + Number(quantityRestock);
-            }
-            var sqlQueryOperation = `UPDATE Products SET StockQuantity = ${newQuantity} WHERE ItemId = "${productId}"`;
-            return connection.query(sqlQueryOperation, function(error, data) {
-                console.log(error, data)
-                if (!error) {
-                    return res.status(201).redirect('/products'); //('Data Updated Successfully');
-                } else {
-                    return res.status(400).json(error.message);
-                }
-            });
+        var quantityAvailable = Number(result[0].StockQuantity);
+        var newQuantity;
+        console.log('===' + quantityAvailable);
+        if (operation == 'REMOVE') {
+            newQuantity = quantityAvailable - Number(quantityDeplete);
         } else {
-             return res.status(400).json(err.message);
+            newQuantity = quantityAvailable + Number(quantityRestock);
         }
+        var sqlQueryOperation = `UPDATE Products SET StockQuantity = ${newQuantity} WHERE ItemId = "${productId}"`;
+        return connection.query(sqlQueryOperation, function(error, data) {
+            console.log(error, data)
+            if (!error) {
+                return res.status(201).redirect('/products'); //('Data Updated Successfully');
+            } else {
+                return res.status(400).json(error.message);
+            }
+        });
     })
 
 });
