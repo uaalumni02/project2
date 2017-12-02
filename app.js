@@ -25,7 +25,7 @@ var connection = mysql.createConnection({
 var DB_URL = process.env.MONGO_URL;
 var TOKEN = process.env.TOKEN;
 
-var PORT = process.env.PORT ||3000;
+var PORT = process.env.PORT || 3000;
 
 var TWILIO_ID = process.env.TWILIO_ACCOUNT_ID;
 var TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
@@ -64,7 +64,7 @@ app.use(session({
     }
 }));
 
-// This middleware will cehck if user's cookie is still saved in the browser and user's session is not set, then automatically logs out the user;
+// This middleware will check if user's cookie is still saved in the browser and user's session is not set, then automatically logs out the user;
 // this usually happens if you stopped your express server, the cookie still remains saved in the browser.
 app.use((req, res, next) => {
     if (req.cookies.user_sid && !req.session.user) {
@@ -82,20 +82,20 @@ var sessionChecker = (req, res, next) => {
     }
 }
 
-app.get('/', sessionChecker, function (req, res) {
+app.get('/', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 
-app.get('/reservation', sessionChecker, function (req, res) {
+app.get('/reservation', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/reservation.html'));
 });
-app.get('/productlist', sessionChecker, function (req, res) {
+app.get('/productlist', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/productlist.html'));
 });
-app.get('/Inventoryinput', sessionChecker, function (req, res) {
+app.get('/Inventoryinput', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/Inventoryinput.html'));
 });
@@ -114,36 +114,27 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
         var quantityAvailable = Number(result[0].StockQuantity);
         var newQuantity;
         console.log('===' + quantityAvailable);
-        if(operation == 'REMOVE') {
-            newQuantity =  quantityAvailable - Number(quantityDeplete);
+        if (operation == 'REMOVE') {
+            newQuantity = quantityAvailable - Number(quantityDeplete);
         } else {
             newQuantity = quantityAvailable + Number(quantityRestock);
         }
         var sqlQueryOperation = `UPDATE Products SET StockQuantity = ${newQuantity} WHERE ItemId = "${productId}"`;
         return connection.query(sqlQueryOperation, function(error, data) {
             console.log(error, data)
-            if(!error) {
+            if (!error) {
                 return res.status(201).redirect('/products'); //('Data Updated Successfully');
             } else {
                 return res.status(400).json(error.message);
             }
         });
     })
-    // ItemId int(11) AUTO_INCREMENT NOT NULL,
-   // ProductName varchar(100) NOT NULL,
-    // StockQuantity  int NOT NULL, 
-    // PRIMARY KEY (ItemId)
- //   console.log(product_id, quantityRestock, quantityDeplete);
-   // if(quantityRestock > 0) {
-     //   sql
-   //  } 
-
 
 });
 
-app.post('/reservation', function (req, res) {
+app.post('/reservation', function(req, res) {
     // Post the form here ...
-    var userDateTime = req.body.datetime; 
+    var userDateTime = req.body.datetime;
     var userName = req.body.name;
     var userPhone = req.body.phone;
     var userEmail = req.body.email;
@@ -153,16 +144,16 @@ app.post('/reservation', function (req, res) {
     var bookingTime = userDateTime.split(" ")[1];
     var userMessage = userName + ', your appointment is on ' + bookingDate + ' at ' + bookingTime;
     var userBooking = new Booking({ name: userName, date: userDateTime });
-    return userBooking.save(function (err) {
+    return userBooking.save(function(err) {
         if (!err) {
             return Twilio.messages.create({
                 body: userMessage,
                 to: userPhone,
                 from: TWILIO_PHONE,
-            }).then(function (response) {
+            }).then(function(response) {
                 // return res.status(200).send(JSON.stringify(req.body));
-                return res.sendFile(path.join(__dirname + '/views/success.html'));                
-            }).catch(function (err) {
+                return res.sendFile(path.join(__dirname + '/views/success.html'));
+            }).catch(function(err) {
                 return res.send('Unable to send SMS');
             });
         } else {
@@ -184,7 +175,7 @@ app.get('/products', sessionChecker, function(req, res) {
 });
 
 
-app.get('/login', sessionChecker, function (req, res) {
+app.get('/login', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/login.html'));
 });
@@ -193,19 +184,19 @@ app.get('/login', sessionChecker, function (req, res) {
 //     return res.sendFile(path.join(__dirname + '/views/services.html'));
 // });
 
-app.get('/index', sessionChecker, function (req, res) {
+app.get('/index', sessionChecker, function(req, res) {
     return res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 
 
 app.get('/allBookings', function(req, res) {
     var token = req.query.token;
-    if(token == TOKEN){
+    if (token == TOKEN) {
         return Booking.find({}, function(err, data) {
-            if(err) {
+            if (err) {
                 console.log('Unable to find documents');
             } else {
-                if(data) {
+                if (data) {
                     var html = '';
                     data.forEach(function(entry) {
                         html += `
@@ -232,13 +223,13 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
     console.log('got here', req.body)
-    User.findOne({username: req.body.username, password: req.body.password}, (err, user) => {
+    User.findOne({ username: req.body.username, password: req.body.password }, (err, user) => {
         if (err || !user) {
             return res.sendFile(path.join(__dirname + '/views/login.html'));
         } else {
             req.session.user = user;
-            return res.sendFile(path.join(__dirname + '/views/index.html'));   
-        }  
+            return res.sendFile(path.join(__dirname + '/views/index.html'));
+        }
     });
 });
 
@@ -249,6 +240,6 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
-app.listen(PORT, function () {
+app.listen(PORT, function() {
     console.log('App is running on PORT ' + PORT);
 })
