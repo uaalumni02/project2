@@ -40,6 +40,7 @@ var execsql = require('execsql'),
     execsql.config(dbConfig)
     .exec(sql)
     .execFile(sqlFile, function(err, results){
+        console.log(err);
         console.log('===============seeeeded============>', results);
     }).end();
 // var connection = mysql.createConnection({
