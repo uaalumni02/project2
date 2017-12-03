@@ -14,10 +14,16 @@ var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var pinger = require('./helpers/ping-db');
 
+var db = {
+    host: process.env.DB_HOST,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME
+};
 
-var connection = require('./helpers/connection')();
+var connection = require('./helpers/connection')(db);
 
-setInterval(function(){pinger(connection)}, 5000);
+setInterval(function(){pinger(connection)}, 10000);
 
 
 
