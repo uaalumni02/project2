@@ -1,19 +1,29 @@
+/** Setup dotenv module to expose environment variables **/
 require('dotenv').config();
-// var inquirer = require('inquirer');
+
+/** Import  modules **/
 var mysql = require('mysql');
 var express = require('express');
 var twilio = require('twilio');
 var mongoose = require('mongoose');
-//var mongoose.Promise = require('bluebird');
-var Booking = require('./models/Booking');
-var User = require('./models/User');
 var bodyParser = require('body-parser');
-var app = express();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
+
+/** Create an instance of express server */
+var app = express();
+
+
+/** Import helper module pinger to keep db connection alive */
 var pinger = require('./helpers/ping-db');
 
+
+/** Import models */
+var Booking = require('./models/Booking');
+var User = require('./models/User');
+
+/** Define SQL DB config credentials */
 var db = {
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
@@ -21,24 +31,31 @@ var db = {
     database: process.env.DB_NAME
 };
 
+/** Connect to database passing in the provided credentials*/
 var connection = require('./helpers/connection')(db);
 
+
+/** Ping the database every 10 seconds to keep connection alive */
 setInterval(function(){pinger(connection)}, 10000);
+
 
 
 
 var DB_URL = process.env.MONGO_URL;
 var TOKEN = process.env.TOKEN;
 
+/** Choose port from environment file or use 3000 if no PORT in environment */
 var PORT = process.env.PORT || 3000;
 
 var TWILIO_ID = process.env.TWILIO_ACCOUNT_ID;
 var TWILIO_TOKEN = process.env.TWILIO_AUTH_TOKEN;
 var TWILIO_PHONE = process.env.TWILIO_PHONE_NUMBER;
+
+/** Create an instance of twilio passing in the Twilio credentials */
 var Twilio = twilio(TWILIO_ID, TWILIO_TOKEN);
 
 
-// MySQL connect
+/* Watch and print message to the console when MYSQL connects */
 connection.connect(function() {
     console.log('Connected');
 });
@@ -54,8 +71,11 @@ mongoose.connect(DB_URL, { useMongoClient: true }).then(function() {
 mongoose.Promise = global.Promise;
 
 
+
+/** Set public as directory for static files (JS, images, css) */
 app.use(express.static('public'));
-// Parsing the request body
+
+/* Setup body parser as middleware to parse request body */
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -81,6 +101,7 @@ app.use((req, res, next) => {
 })
 
 // middleware to check for logged-in users
+// If user does not have a valid session or cookie, then it serves a page ('login')
 var sessionChecker = (req, res, next) => {
     if (req.session.user && req.cookies.user_sid) {
         next();
@@ -89,11 +110,13 @@ var sessionChecker = (req, res, next) => {
     }
 }
 
+/** THe home route **/
 app.get('/', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/index.html'));
 });
 
+/** Reservations route */
 app.get('/reservation', sessionChecker, function(req, res) {
     // return res.send('It works');
     return res.sendFile(path.join(__dirname + '/views/reservation.html'));
@@ -107,6 +130,8 @@ app.get('/Inventoryinput', sessionChecker, function(req, res) {
     return res.sendFile(path.join(__dirname + '/views/Inventoryinput.html'));
 });
 
+
+/** Inventry input route, page gets call when form is submitted */
 app.post('/Inventoryinput', sessionChecker, function(req, res) {
     var productId = parseInt(req.body.product_id);
     var quantityRestock = req.body.qty_restock || 0;
@@ -114,8 +139,11 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
     var sqlQuery;
     var productQuantity;
 
+
+    /* Set operation as 'Remove ' or Add */
     var operation = quantityDeplete > quantityRestock ? 'REMOVE' : 'ADD';
 
+    /** Run query against the Database */
     return connection.query(`SELECT StockQuantity from Products WHERE ItemId = "${productId}"`, function(err, result) {
         if(err) throw err
         console.log(result)
@@ -142,6 +170,7 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
 
 });
 
+/
 app.post('/reservation', function(req, res) {
     // Post the form here ...
     var userDateTime = req.body.datetime;
@@ -200,6 +229,7 @@ app.get('/index', sessionChecker, function(req, res) {
 });
 
 
+/** Query DB, return the data and try to build the page htnl*/
 app.get('/allBookings', function(req, res) {
     var token = req.query.token;
     if (token == TOKEN) {
@@ -226,6 +256,8 @@ app.get('/allBookings', function(req, res) {
     }
 });
 
+
+/* Send the registation info to the server */
 app.post('/register', (req, res) => {
     User.create(req.body).then(user => {
         res.send(user)
@@ -233,8 +265,9 @@ app.post('/register', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    console.log('got here', req.body)
-    User.findOne({ username: req.body.username, password: req.body.password }, (err, user) => {
+    console.log(req.body)
+    User.findOne({ username: req.body.username, password: req.body.password }, function (err, user){
+        console.log(user)
         if (err || !user) {
             return res.sendFile(path.join(__dirname + '/views/login.html'));
         } else {
@@ -244,6 +277,7 @@ app.post('/login', (req, res) => {
     });
 });
 
+/** Clear the cookie  then the user's session is not valid*/
 app.get('/logout', (req, res) => {
     if (req.session.user && req.cookies.user_sid) {
         res.clearCookie('user_sid');
@@ -251,6 +285,7 @@ app.get('/logout', (req, res) => {
     res.redirect('/login');
 });
 
+/** Listen to port and serve app */
 app.listen(PORT, function() {
     console.log('App is running on PORT ' + PORT);
 })
