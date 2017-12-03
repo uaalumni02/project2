@@ -36,7 +36,7 @@ var connection = require('./helpers/connection')(db);
 
 
 /** Ping the database every 10 seconds to keep connection alive */
-setInterval(function(){pinger(connection)}, 10000);
+setInterval(function() { pinger(connection) }, 10000);
 
 
 
@@ -145,7 +145,7 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
 
     /** Run query against the Database */
     return connection.query(`SELECT StockQuantity from Products WHERE ItemId = "${productId}"`, function(err, result) {
-        if(err) throw err
+        if (err) throw err
         console.log(result)
         var quantityAvailable = Number(result[0].StockQuantity);
         var newQuantity;
@@ -170,7 +170,7 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
 
 });
 
-/
+
 app.post('/reservation', function(req, res) {
     // Post the form here ...
     var userDateTime = req.body.datetime;
@@ -266,7 +266,7 @@ app.post('/register', (req, res) => {
 
 app.post('/login', (req, res) => {
     console.log(req.body)
-    User.findOne({ username: req.body.username, password: req.body.password }, function (err, user){
+    User.findOne({ username: req.body.username, password: req.body.password }, function(err, user) {
         console.log(user)
         if (err || !user) {
             return res.sendFile(path.join(__dirname + '/views/login.html'));
