@@ -12,28 +12,15 @@ var app = express();
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
-// var connection = mysql.createConnection({
-//     host: 'localhost',
-//     port: 3306,
-//     user: 'root',
-//     password: 'mecotyya1!',
-//     database: 'barbershop'
-// });
+var pinger = require('./helpers/ping-db');
 
-var connection = mysql.createConnection({
-    host: 'us-cdbr-iron-east-05.cleardb.net',
-    user: 'b780db20a8b3da',
-    password: '04b718ae',
-    database: 'heroku_517e0a0ae32c3ab'
-});
 
-connection.query('SELECT * from Products', (err, data) => {
-        if(!err) {
-            console.log(data)
-        } else {
-            console.log(err.message)
-        }
-});
+var connection = require('./helpers/connection')();
+
+setInterval(function(){pinger(connection)}, 5000);
+
+
+
 var DB_URL = process.env.MONGO_URL;
 var TOKEN = process.env.TOKEN;
 
@@ -47,12 +34,10 @@ var Twilio = twilio(TWILIO_ID, TWILIO_TOKEN);
 
 // MySQL connect
 connection.connect(function() {
-    console.log('Connection successful my sql =========================>');
+    console.log('Connected');
 });
 
-connect.on('error', function() {
-    console.log('Connection Error');
-});
+
 
 // Connect to mongoose
 mongoose.connect(DB_URL, { useMongoClient: true }).then(function() {
@@ -109,7 +94,7 @@ app.get('/reservation', sessionChecker, function(req, res) {
 });
 app.get('/productlist', sessionChecker, function(req, res) {
     // return res.send('It works');
-    return res.sendFile(path.join(__dirname + '/views/productlist.html'));
+    return res.sendFile(path.join(__dirname + '/views/allproducts.html'));
 });
 app.get('/Inventoryinput', sessionChecker, function(req, res) {
     // return res.send('It works');
@@ -126,8 +111,8 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
     var operation = quantityDeplete > quantityRestock ? 'REMOVE' : 'ADD';
 
     return connection.query(`SELECT StockQuantity from Products WHERE ItemId = "${productId}"`, function(err, result) {
-        console.log(result);
-        console.log(err)
+        if(err) throw err
+        console.log(result)
         var quantityAvailable = Number(result[0].StockQuantity);
         var newQuantity;
         console.log('===' + quantityAvailable);
@@ -138,10 +123,12 @@ app.post('/Inventoryinput', sessionChecker, function(req, res) {
         }
         var sqlQueryOperation = `UPDATE Products SET StockQuantity = ${newQuantity} WHERE ItemId = "${productId}"`;
         return connection.query(sqlQueryOperation, function(error, data) {
+
             console.log(error, data)
             if (!error) {
                 return res.status(201).redirect('/products'); //('Data Updated Successfully');
             } else {
+                throw error
                 return res.status(400).json(error.message);
             }
         });
@@ -201,15 +188,6 @@ app.get('/login', sessionChecker, function(req, res) {
 //     return res.sendFile(path.join(__dirname + '/views/services.html'));
 // });
 
-
-app.get('/dblog', (req, res) => {
-    return connection.query('SELECT * from Products', (e, d) => {
-        if(!e)
-            console.log(d);
-        else
-            console.log(e.message);
-    });
-});
 
 app.get('/index', sessionChecker, function(req, res) {
     return res.sendFile(path.join(__dirname + '/views/index.html'));
