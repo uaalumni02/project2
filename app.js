@@ -79,7 +79,7 @@ app.use(express.static('public'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// manages user session
+// manages user session; there are a lot of great examples online regarding this
 app.use(cookieParser());
 app.use(session({
     key: 'user_sid',
@@ -219,9 +219,6 @@ app.get('/login', sessionChecker, function(req, res) {
     return res.sendFile(path.join(__dirname + '/views/login.html'));
 });
 
-// app.get('/services', function (req, res) {
-//     return res.sendFile(path.join(__dirname + '/views/services.html'));
-// });
 
 
 app.get('/index', sessionChecker, function(req, res) {
@@ -229,7 +226,7 @@ app.get('/index', sessionChecker, function(req, res) {
 });
 
 
-/** Query DB, return the data and try to build the page htnl*/
+/** Query DB, return the data and try to build the page html pull appts from DB using query string*/
 app.get('/allBookings', function(req, res) {
     var token = req.query.token;
     if (token == TOKEN) {
@@ -263,7 +260,7 @@ app.post('/register', (req, res) => {
         res.send(user)
     }).catch(err => res.send(err));
 });
-
+//if pswd successful go to index; if not stay on login
 app.post('/login', (req, res) => {
     console.log(req.body)
     User.findOne({ username: req.body.username, password: req.body.password }, function(err, user) {

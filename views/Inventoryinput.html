@@ -23,19 +23,15 @@
                     <li>
                         <a href="/index">Home</a>
                     </li>
-                    <!-- <li>
-                        <a href="/services">Services</a>
-                    </li> -->
-                    <li >
+                    <li>
                         <a href="/reservation">Reservations</a>
                     </li>
-                    <li >
+                    <li>
                         <a href="/productlist">Products</a>
                     </li>
                     <li class="active">
                         <a href="/Inventoryinput">+/-Quantity</a>
                     </li>
-                    
                 </ul>
             </div>
         </nav>
@@ -45,31 +41,30 @@
                     <div class="panel-heading">
                         <h4 class="panel-title">Update Product </h4>
                         <script>
-                            var now = new Date();
-                            var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
-                            var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-                            var date = ((now.getDate() < 10) ? "0" : "") + now.getDate();
+                        var now = new Date();
+                        var days = new Array('Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday');
+                        var months = new Array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
+                        var date = ((now.getDate() < 10) ? "0" : "") + now.getDate();
 
-                            function fourdigits(number) {
-                                return (number < 1000) ? number + 1900 : number;
-                            }
-                            today = days[now.getDay()] + ", " +
-                                months[now.getMonth()] + " " +
-                                date + ", " +
-                                (fourdigits(now.getYear()));
-                            document.write(today);
+                        function fourdigits(number) {
+                            return (number < 1000) ? number + 1900 : number;
+                        }
+                        today = days[now.getDay()] + ", " +
+                            months[now.getMonth()] + " " +
+                            date + ", " +
+                            (fourdigits(now.getYear()));
+                        document.write(today);
                         //  End -->
                         </script>
                     </div>
                     <div class="panel-body">
                         <form role="form" action="/Inventoryinput" , method="POST">
                             <div class="form-group">
-                                    <label for="reserve-name">Product ID</label>                                                                            
+                                <label for="reserve-name">Product ID</label>
                                 <div class='input-group date' id='datetime'>
                                     <input name="product_id" type='text' class="form-control" />
                                 </div>
                             </div>
-
                             <div class="form-group">
                                 <label for="reserve-name">Quantity to Restock</label>
                                 <input type="text" name="qty_restock" class="form-control" id="reserve-name">
@@ -80,10 +75,10 @@
                             </div>
                             <button type="submit" class="btn btn-primary submit">Submit</button>
                         </form>
-
     </body>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.2/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.47/js/bootstrap-datetimepicker.min.js"></script>
+
 </html>

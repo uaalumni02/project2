@@ -21,5 +21,8 @@ VALUES (3, 'Brushes', 319);
 INSERT INTO Products (ItemId, ProductName, StockQuantity)
 VALUES (4 ,'Sponges', 110);
 
+INSERT INTO Products (ItemId, ProductName, StockQuantity)
+VALUES (4 ,'Combs', 296);
+
 
 
